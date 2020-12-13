@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  pull_request:
+
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.3, 2.4, 2.5, 2.6, 2.7]
+        include:
+          - { ruby: 2.7, matrix: pipeline }
+
+    runs-on: ubuntu-latest
+
+    env:
+      TRAVIS_MATRIX: ${{ matrix.matrix }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Install hoe
+      run: gem install hoe --no-document
+
+    - name: Setup things
+      run: rake install_plugins check_extra_deps -t
+
+    - name: Test things
+      run: rake test check_manifest
