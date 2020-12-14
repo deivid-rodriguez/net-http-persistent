@@ -30,8 +30,20 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
+    - name: Download hoe
+      uses: actions/checkout@v2
+      with:
+        repository: deivid-rodriguez/hoe
+        ref: fix_jruby_windows
+        path: hoe
+
     - name: Install hoe
-      run: gem install hoe --no-document
+      run: rake install_gem
+      working-directory: hoe
+
+    - name: Cleanup hoe
+      run: rm -rf hoe
+      shell: bash
 
     - name: Setup things
       run: rake install_plugins check_extra_deps -t
